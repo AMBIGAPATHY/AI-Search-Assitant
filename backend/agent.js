@@ -1,31 +1,37 @@
-require('dotenv').config();
-const axios = require('axios');
-const readline = require('readline');
-const { getJson } = require('serpapi');
+import axios from 'axios';
+import { getJson } from 'serpapi';
 
-// Gemini Config
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+// Load environment variables (optional in Vercel)
+if (!process.env.GEMINI_API_KEY) {
+  const dotenv = await import('dotenv');
+  dotenv.config();
+}
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY;
+const GEMINI_API_URL =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
-// Generate Gemini response
+// 🔹 Call Gemini API
 async function getGeminiResponse(prompt) {
   try {
     const res = await axios.post(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       contents: [
         {
           role: 'user',
-          parts: [{ text: prompt }]
-        }
-      ]
+          parts: [{ text: prompt }],
+        },
+      ],
     });
-    return res.data.candidates[0]?.content?.parts[0]?.text || 'No response from Gemini.';
+
+    return res.data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.';
   } catch (err) {
-    console.error('Gemini API error:', err.response?.data || err.message);
+    console.error('❌ Gemini API error:', err.response?.data || err.message);
     return '⚠️ Gemini API error.';
   }
 }
 
-// Wikipedia
+// 🔹 Wikipedia summary
 async function searchWikipedia(query) {
   try {
     const response = await axios.get('https://en.wikipedia.org/w/api.php', {
@@ -34,12 +40,14 @@ async function searchWikipedia(query) {
         list: 'search',
         srsearch: query,
         format: 'json',
-        srlimit: 1
-      }
+        srlimit: 1,
+      },
     });
+
     const results = response.data.query.search;
     if (!results.length) return 'No results found.';
     const pageId = results[0].pageid;
+
     const page = await axios.get('https://en.wikipedia.org/w/api.php', {
       params: {
         action: 'query',
@@ -47,49 +55,63 @@ async function searchWikipedia(query) {
         pageids: pageId,
         exintro: true,
         explaintext: true,
-        format: 'json'
-      }
+        format: 'json',
+      },
     });
+
     return page.data.query.pages[pageId].extract;
-  } catch {
+  } catch (err) {
+    console.error('📘 Wikipedia error:', err.message);
     return 'Error fetching Wikipedia data.';
   }
 }
 
-// Google news
+// 🔹 Google News search
 async function searchGoogleNews(query) {
   return new Promise((resolve, reject) => {
-    getJson({
-      engine: 'google',
-      q: query,
-      num: 6,
-      hl: 'en',
-      api_key: process.env.SERPAPI_API_KEY
-    }, json => {
-      if (json.error) return reject(json.error);
-      const news = json.organic_results.map(item => `• ${item.title}\n${item.snippet || ''}\n${item.link}`);
-      resolve(news.join('\n\n'));
-    });
+    getJson(
+      {
+        engine: 'google',
+        q: query,
+        num: 5,
+        hl: 'en',
+        api_key: SERPAPI_API_KEY,
+      },
+      (json) => {
+        if (json.error) return reject(json.error);
+
+        const news = json.organic_results.map((item) => {
+          return `• ${item.title}\n${item.snippet || ''}\n${item.link}`;
+        });
+
+        resolve(news.join('\n\n'));
+      }
+    );
   });
 }
 
-// Main agent logic
-async function runAgent(query) {
+// 🔹 Main Agent Logic
+export async function runAgent(query) {
   const wikiText = await searchWikipedia(query);
   const newsText = await searchGoogleNews(query);
 
   const prompt = `
-You are an intelligent AI assistant. Using the following data:
-Wikipedia: ${wikiText}
-News: ${newsText}
+You are a helpful, friendly AI assistant.
 
-Summarize all this clearly and conversationally for a user. Make it useful, engaging, and easy to understand.
+Summarize the following content in a clear, conversational tone:
+
+🔹 Wikipedia:
+${wikiText}
+
+📰 Google News:
+${newsText}
+
+Respond concisely, in natural language, and avoid technical jargon.
   `;
 
   return await getGeminiResponse(prompt);
 }
 
-module.exports = { runAgent };
 
 
 
