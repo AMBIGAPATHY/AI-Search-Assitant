@@ -1,29 +1,31 @@
-require('dotenv').config();
 const axios = require('axios');
-const readline = require('readline');
-const { getJson } = require('serpapi');
+require('dotenv').config();
 
-// Gemini Config
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-// Generate Gemini response
 async function getGeminiResponse(prompt) {
-  try {
-    const res = await axios.post(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+  const res = await axios.post(
+    `${GEMINI_API_URL}?key=${process.env.GEMINI_API_KEY}`,
+    {
       contents: [
         {
           role: 'user',
           parts: [{ text: prompt }]
         }
       ]
-    });
-    return res.data.candidates[0]?.content?.parts[0]?.text || 'No response from Gemini.';
-  } catch (err) {
-    console.error('Gemini API error:', err.response?.data || err.message);
-    return '⚠️ Gemini API error.';
-  }
+    }
+  );
+
+  return res.data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.';
 }
+
+async function runAgent(query) {
+  const prompt = `Give a helpful, concise, and friendly explanation about:\n\n"${query}"`;
+  return await getGeminiResponse(prompt);
+}
+
+module.exports = { runAgent };
+
 
 // Wikipedia
 async function searchWikipedia(query) {
