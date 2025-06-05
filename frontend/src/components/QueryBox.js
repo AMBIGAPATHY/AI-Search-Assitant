@@ -15,7 +15,7 @@ const QueryBox = () => {
     setLoading(true);
     setResult('');
     try {
-      const res = await axios.post('https://ai-search-assitant.vercel.app/api/query', { query });
+      const res = await axios.post('https://backendsearchassitant.vercel.app/api/query', { query });
       setResult(res.data.result);
     } catch (error) {
       setResult('⚠️ Could not connect to server.');
