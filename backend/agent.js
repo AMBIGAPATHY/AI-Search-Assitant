@@ -1,29 +1,29 @@
+require('dotenv').config();Add commentMore actions
 const axios = require('axios');
-require('dotenv').config();
+const readline = require('readline');
+const { getJson } = require('serpapi');
 
+// Gemini Config
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
+// Generate Gemini response
 async function getGeminiResponse(prompt) {
-  const res = await axios.post(
-    `${GEMINI_API_URL}?key=${process.env.GEMINI_API_KEY}`,
-    {
+  try {
+    const res = await axios.post(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       contents: [
         {
           role: 'user',
           parts: [{ text: prompt }]
         }
       ]
-    }
-  );
-
-  return res.data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.';
+    });
+    return res.data.candidates[0]?.content?.parts[0]?.text || 'No response from Gemini.';
+  } catch (err) {
+    console.error('Gemini API error:', err.response?.data || err.message);
+    return '⚠️ Gemini API error.';
+  }
 }
-
-async function runAgent(query) {
-  const prompt = `Give a helpful, concise, and friendly explanation about:\n\n"${query}"`;
-  return await getGeminiResponse(prompt);
-}
-
 module.exports = { runAgent };
 
 
