@@ -15,7 +15,7 @@ const QueryBox = () => {
     setLoading(true);
     setResult('');
     try {
-      const res = await axios.post('http://localhost:5000/api/query', { query });
+      const res = await axios.post('https://your-backend-name.vercel.app/api/query', { query });
       setResult(res.data.result);
     } catch (error) {
       setResult('⚠️ Could not connect to server.');
