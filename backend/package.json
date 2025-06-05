@@ -1,14 +1,7 @@
 {
   "type": "module",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "axios": "^1.6.0",
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.0",
-    "express": "^5.1.0",
-    "google-search-results-nodejs": "^2.1.0",
-    "groq-sdk": "^0.23.0",
-    "serpapi": "^2.1.0"
+    "dotenv": "^16.0.0"
   }
 }
