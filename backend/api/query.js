@@ -8,12 +8,12 @@ export default async function handler(req, res) {
   try {
     const { query } = req.body;
     if (!query || typeof query !== 'string') {
-      return res.status(400).json({ error: 'Invalid query' });
+      return res.status(400).json({ error: 'Missing or invalid query.' });
     }
 
     const result = await runAgent(query);
     res.status(200).json({ result });
   } catch (error) {
-    res.status(500).json({ error: 'Server Error', detail: error.message });
+    res.status(500).json({ error: 'Server error', detail: error.message });
   }
 }
