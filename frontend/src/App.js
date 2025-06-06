@@ -7,7 +7,7 @@ function App() {
     <div className="app-container">
       <QueryBox />
       <footer className="footer">
-        <span>Made with ❤️ by the Sarath's AI Agent Team</span>
+        <span>Made with ❤️ by the S.K. Ambigapathy's AI Assitent Team</span>
       </footer>
     </div>
   );
