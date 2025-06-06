@@ -15,7 +15,9 @@ const QueryBox = () => {
     setLoading(true);
     setResult('');
     try {
-      const res = await axios.post('https://backendsearchassitant.vercel.app/api/query', { query });
+      const res = await axios.post('https://backendsearchassitant.vercel.app/api/query', {
+        query
+      });
       setResult(res.data.result);
     } catch (error) {
       setResult('⚠️ Could not connect to server.');
@@ -29,7 +31,7 @@ const QueryBox = () => {
       <img src="/robot.png" alt="avatar" className="bot-avatar" />
       <div className="chat-bubble">
         <p>
-          Hello! I’m <b>Sarath's AI Agent</b>, your smart search assistant. <br />
+          Hello! I’m <b>Sarath's AI Agent</b>, your smart search assistant.<br />
           The more detailed your question, the better I can help 😊
         </p>
       </div>
@@ -42,7 +44,7 @@ const QueryBox = () => {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         />
-        <button onClick={handleSearch}>
+        <button onClick={handleSearch} disabled={loading}>
           <FaRegPaperPlane />
         </button>
       </div>
