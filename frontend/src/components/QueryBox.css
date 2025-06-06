@@ -31,34 +31,33 @@
 
 .input-box {
   display: flex;
-  flex-direction: row;
-  align-items: center;
   width: 100%;
-  background: #f2f2f2;
   border-radius: 12px;
+  background: #f2f2f2;
   overflow: hidden;
+  margin-top: 1rem;
 }
 
 .input-box input {
   flex: 1;
-  border: none;
   padding: 1rem;
   font-size: 16px;
-  background: transparent;
+  border: none;
   outline: none;
+  background: transparent;
 }
 
 .input-box button {
-  padding: 0.9rem 1.2rem;
   background: #007bff;
   color: white;
   border: none;
-  font-size: 18px;
+  padding: 1rem;
+  font-size: 20px;
   cursor: pointer;
-  border-left: 1px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 64px; /* ✅ fixes half button on mobile */
 }
 
 .response-box {
@@ -70,5 +69,4 @@
   width: 100%;
   font-size: 16px;
   line-height: 1.6;
-  white-space: pre-wrap;
 }
